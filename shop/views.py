@@ -1,31 +1,20 @@
-from rest_framework.views import APIView
+from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
  
 from shop.models import Category, Product
 from shop.serializers import CategorySerializer, ProductSerializer
+
+class CategoryViewset(ReadOnlyModelViewSet):
  
-class CategoryAPIView(APIView):
-
-    # defini la methode GET
-    def get(self, *args, **kwargs):
-        # recupère toutes les catégories
-        categories = Category.objects.all() 
-
-        # sérialise les données à l'aide de notre sérializers
-        # le paramètre "many" permet de généer une liste d élément, si on veut juste sérializer un élément, alors on omet se paramètre
-        serializer = CategorySerializer(categories, many=True) 
-
-        return Response(serializer.data) # renvoi une réponse qui contient les données sérialisés
+    serializer_class = CategorySerializer
+ 
+    def get_queryset(self):
+        return Category.objects.all()
     
 
-
-class ProductAPIView(APIView):
-
-    def get(self, *args, **kwargs):
-        # recup les produits
-        products = Product.objects.all()
-
-        # serialise les données
-        serializer = ProductSerializer(products, many=True)
-
-        return Response(serializer.data)
+class ProductViewset(ReadOnlyModelViewSet):
+ 
+    serializer_class = ProductSerializer
+ 
+    def get_queryset(self):
+        return Product.objects.all()

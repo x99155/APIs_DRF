@@ -1,15 +1,15 @@
 from rest_framework.viewsets import ReadOnlyModelViewSet
 from rest_framework.response import Response
  
-from shop.models import Category, Product
-from shop.serializers import CategorySerializer, ProductSerializer
+from shop.models import Category, Product, Article
+from shop.serializers import CategorySerializer, ProductSerializer, ArticleSerializer
 
 class CategoryViewset(ReadOnlyModelViewSet):
  
     serializer_class = CategorySerializer
  
     def get_queryset(self):
-        return Category.objects.all()
+        return Category.objects.filter(active=True)
     
 
 class ProductViewset(ReadOnlyModelViewSet):
@@ -17,4 +17,19 @@ class ProductViewset(ReadOnlyModelViewSet):
     serializer_class = ProductSerializer
  
     def get_queryset(self):
-        return Product.objects.all()
+    # Nous récupérons tous les produits dans une variable nommée queryset
+        queryset = Product.objects.filter(active=True)
+
+        # Vérifions la présence du paramètre ‘category_id’ dans l’url et si oui alors appliquons notre filtre
+        category_id = self.request.GET.get('category_id')
+        if category_id is not None:
+            queryset = queryset.filter(category_id=category_id)
+        return queryset
+    
+
+class ArticleViewset(ReadOnlyModelViewSet):
+
+    serializer_class = ArticleSerializer
+
+    def get_queryset(self):
+        return Article.objects.filter(active=True) # retourne uniquement les articles actifs
